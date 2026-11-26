@@ -1,0 +1,25 @@
+{
+  "aigirl-model-tracker": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node hooks/track_model.mjs",
+        "timeout": 5
+      }
+    ],
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node hooks/track_model.mjs",
+        "timeout": 5
+      }
+    ],
+    "PostInvocation": [
+      {
+        "type": "command",
+        "command": "node hooks/track_model.mjs",
+        "timeout": 5
+      }
+    ]
+  }
+}

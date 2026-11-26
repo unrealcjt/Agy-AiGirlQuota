@@ -1,0 +1,12 @@
+{
+  "name": "aigirl-quota",
+  "displayName": "AI Girl Quota",
+  "description": "Virtual companion side panel displaying live Claude & Gemini 5-hour and weekly quota HP bars, reset countdown clocks, and active model / Orchestrator highlights.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Open the AI Girl Quota side panel to check my Claude and Gemini quota HP bars",
+    "Check remaining 5-hour and weekly quota reset times for all models",
+    "Calibrate my weekly quota reset schedule in AI Girl Quota"
+  ]
+}

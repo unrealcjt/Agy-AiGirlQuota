@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="14" y1="14" x2="114" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E1B2E" />
+      <stop offset="100%" stop-color="#2D233D" />
+    </linearGradient>
+    <linearGradient id="claudeGrad" x1="24" y1="24" x2="64" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFB469" />
+      <stop offset="100%" stop-color="#E87A35" />
+    </linearGradient>
+    <linearGradient id="geminiGrad" x1="64" y1="24" x2="104" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7DF9FF" />
+      <stop offset="50%" stop-color="#8B7BFF" />
+      <stop offset="100%" stop-color="#C084FC" />
+    </linearGradient>
+    <linearGradient id="hpGrad" x1="26" y1="98" x2="102" y2="98" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="50%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Safe ~10% margin: rounded badge inside [13, 115] -->
+  <rect x="13" y="13" width="102" height="102" rx="26" fill="url(#bgGrad)" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="2" />
+
+  <!-- Subtle twin aura rings -->
+  <circle cx="46" cy="54" r="19" fill="#E87A35" fill-opacity="0.18" />
+  <circle cx="82" cy="54" r="19" fill="#8B7BFF" fill-opacity="0.22" />
+
+  <!-- Claude Warm Sunburst / Petal Emblem (Left) -->
+  <path d="M46 31 L50.5 45.5 L63 41 L53.5 52 L64 60 L50 61 L48 75 L42.5 61.5 L29 63 L38 52.5 L28 43 L41.5 46 Z" fill="url(#claudeGrad)" />
+  <circle cx="46" cy="53" r="5" fill="#FFF7ED" />
+
+  <!-- Gemini Four-Pointed Star Emblem (Right) -->
+  <path d="M82 29 C84 44 89 49 103 52 C89 55 84 60 82 75 C80 60 75 55 61 52 C75 49 80 44 82 29 Z" fill="url(#geminiGrad)" />
+  <circle cx="82" cy="52" r="4.5" fill="#F0F9FF" />
+
+  <!-- Synergy Bridge Spark -->
+  <circle cx="64" cy="52" r="2.5" fill="#FFFFFF" fill-opacity="0.9" />
+
+  <!-- HP Bar Arc / Pill -->
+  <rect x="27" y="88" width="74" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.12" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="1" />
+  <rect x="29" y="90" width="58" height="6" rx="3" fill="url(#hpGrad)" />
+</svg>

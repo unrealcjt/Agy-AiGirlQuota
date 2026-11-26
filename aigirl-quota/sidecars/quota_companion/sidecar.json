@@ -1,0 +1,21 @@
+{
+  "command": "node",
+  "args": ["main.mjs"],
+  "restart_policy": "always",
+  "display_name": "AI Girl Quota",
+  "description": "Live virtual avatar panel showing Claude & Gemini 5-hour and weekly quota HP bars, reset clocks, and active model / Orchestrator highlights.",
+  "has_web_ui": true,
+  "agent_permissions": {
+    "allows_user_interactions": false
+  },
+  "ui_config": {
+    "display_name": "AI Girl Quota",
+    "views": [
+      {
+        "path": "/",
+        "entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE",
+        "title": "AI Girl Quota"
+      }
+    ]
+  }
+}

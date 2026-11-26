@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <title>AI Girl Quota</title>
+  <script src="/preload.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient-backdrop" aria-hidden="true">
+    <div class="ambient-orb orb-claude"></div>
+    <div class="ambient-orb orb-gemini"></div>
+  </div>
+
+  <div id="app" class="hud-shell">
+    <!-- Top Header -->
+    <header class="hud-header">
+      <div class="brand">
+        <span class="brand-badge" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M8.5 3.5L10.3 8.3L15 7L11.2 10.6L15.5 13.8L10.4 14L9.2 19L7.4 14.2L2.5 14.6L6.4 10.9L2.8 7.5L7.6 8.5Z" fill="#E88342"/>
+            <path d="M17.2 6C17.9 10.2 19.6 11.9 23 12.6C19.6 13.3 17.9 15 17.2 19.2C16.5 15 14.8 13.3 11.4 12.6C14.8 11.9 16.5 10.2 17.2 6Z" fill="#7C6CFF"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <h1>AI Girl Quota</h1>
+            <span id="conn-pill" class="conn-pill" title="连接状态">
+              <span class="conn-dot"></span>
+              <span id="conn-label">Live</span>
+            </span>
+          </div>
+          <div class="sync-strip">
+            <span id="tier-label" class="tier-sub">Antigravity Companion</span>
+            <span class="sync-sep">·</span>
+            <span id="sync-status" class="sync-status">同步中...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <label class="interval-pill" title="自动刷新间隔">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 7 12 12 15 14"/>
+          </svg>
+          <select id="auto-interval" aria-label="自动刷新周期">
+            <option value="5000">5s</option>
+            <option value="10000" selected>10s</option>
+            <option value="30000">30s</option>
+            <option value="0">手动</option>
+          </select>
+        </label>
+        <button id="btn-sim" type="button" class="icon-btn" title="状态模拟预览" aria-pressed="false">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3l1.9 5.2L19 10l-5.1 1.8L12 17l-1.9-5.2L5 10l5.1-1.8z"/>
+          </svg>
+          <span>模拟</span>
+        </button>
+        <button id="btn-refresh" type="button" class="icon-btn" title="立即强制刷新额度">
+          <svg class="refresh-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+            <polyline points="21 3 21 9 15 9"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Active Mode Banner -->
+    <section id="mode-banner" class="mode-banner mode-idle" aria-live="polite">
+      <div class="mode-left">
+        <span class="mode-dot" aria-hidden="true"></span>
+        <div class="mode-copy">
+          <span id="mode-tag" class="mode-tag">待机中</span>
+          <span id="mode-model" class="mode-model">检测当前模型...</span>
+        </div>
+      </div>
+      <div id="mode-chips" class="mode-chips"></div>
+    </section>
+
+    <!-- Preview / Simulation Drawer (collapsed by default) -->
+    <section id="sim-drawer" class="sim-drawer hidden" aria-label="状态模拟面板">
+      <div class="sim-head">
+        <span>效果模拟预览（不影响真实数据）</span>
+        <button id="sim-exit" type="button" class="link-btn">恢复实时</button>
+      </div>
+      <div class="sim-presets">
+        <button type="button" class="sim-chip active" data-preset="live">实时数据</button>
+        <button type="button" class="sim-chip" data-preset="claude">Claude 系列</button>
+        <button type="button" class="sim-chip" data-preset="gemini">Gemini 系列</button>
+        <button type="button" class="sim-chip" data-preset="orch-single">Orchestrator 单系</button>
+        <button type="button" class="sim-chip" data-preset="orch-dual">Orchestrator 双系协同</button>
+        <button type="button" class="sim-chip" data-preset="low-hp">低血量预警</button>
+        <button type="button" class="sim-chip" data-preset="claude-zero">Claude 耗尽</button>
+        <button type="button" class="sim-chip" data-preset="gemini-zero">Gemini 耗尽</button>
+      </div>
+      <div class="sim-sliders">
+        <label class="sim-slider">
+          <span>Claude 5H <b id="sim-c5-val">100%</b></span>
+          <input id="sim-c5" type="range" min="0" max="100" value="100">
+        </label>
+        <label class="sim-slider">
+          <span>Claude 周 <b id="sim-cw-val">100%</b></span>
+          <input id="sim-cw" type="range" min="0" max="100" value="100">
+        </label>
+        <label class="sim-slider">
+          <span>Gemini 5H <b id="sim-g5-val">100%</b></span>
+          <input id="sim-g5" type="range" min="0" max="100" value="100">
+        </label>
+        <label class="sim-slider">
+          <span>Gemini 周 <b id="sim-gw-val">100%</b></span>
+          <input id="sim-gw" type="range" min="0" max="100" value="100">
+        </label>
+      </div>
+    </section>
+
+    <!-- Twin Avatar Stage -->
+    <main id="stage" class="avatar-stage">
+      <!-- Gemini Card -->
+      <article id="card-gemini" class="avatar-card theme-gemini" data-family="gemini">
+        <div class="card-glow" aria-hidden="true"></div>
+
+        <div class="card-top">
+          <div class="identity">
+            <span class="fam-badge">GEMINI</span>
+            <h2 class="fam-name">Gemini 系列</h2>
+          </div>
+          <span id="status-gemini" class="state-pill">待命</span>
+        </div>
+
+        <div class="portrait-box">
+          <div class="aura-ring" aria-hidden="true"></div>
+          <div class="sparkles" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <img class="avatar-img" src="/assets/Gemini.png" alt="Gemini Virtual Avatar" draggable="false">
+          <div class="pedestal" aria-hidden="true"></div>
+
+          <!-- Exhausted Grayscale Veil -->
+          <div class="exhausted-veil" aria-hidden="true">
+            <div class="exhausted-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span>额度耗尽 · 暂不可用</span>
+            </div>
+            <span id="veil-timer-gemini" class="veil-timer">等待重置</span>
+          </div>
+        </div>
+
+        <div class="hp-panel">
+          <!-- 5H HP Bar + Mini Clock -->
+          <div class="hp-row" data-bar="gemini-five">
+            <div class="hp-meta">
+              <span class="hp-label">5小时限额</span>
+              <span class="hp-pct" id="pct-gemini-five">--%</span>
+            </div>
+            <div class="hp-bar-wrap">
+              <div class="hp-track" data-tier="high">
+                <div class="hp-trail" id="trail-gemini-five"></div>
+                <div class="hp-fill" id="fill-gemini-five">
+                  <span class="hp-sheen"></span>
+                </div>
+                <div class="hp-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="mini-clock" id="clock-gemini-five" title="重置时间">
+                <svg class="clock-svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle class="clock-ring-bg" cx="12" cy="12" r="9.5"/>
+                  <circle class="clock-ring-prog" cx="12" cy="12" r="9.5"/>
+                  <line class="clock-hand-hr" x1="12" y1="12" x2="12" y2="7.5"/>
+                  <line class="clock-hand-min" x1="12" y1="12" x2="12" y2="5.5"/>
+                  <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+                </svg>
+                <span class="clock-text" id="time-gemini-five">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly HP Bar + Mini Clock -->
+          <div class="hp-row" data-bar="gemini-weekly">
+            <div class="hp-meta">
+              <span class="hp-label">
+                周限额
+                <span id="src-gemini-weekly" class="src-tag" title="周限额数据来源">API 实时</span>
+              </span>
+              <span class="hp-pct" id="pct-gemini-weekly">--%</span>
+            </div>
+            <div class="hp-bar-wrap">
+              <div class="hp-track" data-tier="high">
+                <div class="hp-trail" id="trail-gemini-weekly"></div>
+                <div class="hp-fill" id="fill-gemini-weekly">
+                  <span class="hp-sheen"></span>
+                </div>
+                <div class="hp-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="mini-clock" id="clock-gemini-weekly" title="周重置时间">
+                <svg class="clock-svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle class="clock-ring-bg" cx="12" cy="12" r="9.5"/>
+                  <circle class="clock-ring-prog" cx="12" cy="12" r="9.5"/>
+                  <line class="clock-hand-hr" x1="12" y1="12" x2="12" y2="7.5"/>
+                  <line class="clock-hand-min" x1="12" y1="12" x2="12" y2="5.5"/>
+                  <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+                </svg>
+                <span class="clock-text" id="time-gemini-weekly">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="details-toggle" data-target="models-gemini" aria-expanded="false">
+          <span>模型明细</span>
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="models-gemini" class="models-drawer hidden"></div>
+      </article>
+
+      <!-- Dual Orchestrator Energy Bridge -->
+      <div id="synergy-bridge" class="synergy-bridge hidden" aria-hidden="true">
+        <div class="synergy-line"></div>
+        <div class="synergy-core">
+          <span class="synergy-spark">✦</span>
+          <span class="synergy-label">Orchestrator 双系协同</span>
+          <span class="synergy-spark">✦</span>
+        </div>
+        <div class="synergy-line"></div>
+      </div>
+
+      <!-- Claude Card -->
+      <article id="card-claude" class="avatar-card theme-claude" data-family="claude">
+        <div class="card-glow" aria-hidden="true"></div>
+
+        <div class="card-top">
+          <div class="identity">
+            <span class="fam-badge">CLAUDE</span>
+            <h2 class="fam-name">Claude 系列</h2>
+          </div>
+          <span id="status-claude" class="state-pill">待命</span>
+        </div>
+
+        <div class="portrait-box">
+          <div class="aura-ring" aria-hidden="true"></div>
+          <div class="sparkles" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <img class="avatar-img" src="/assets/Claude.png" alt="Claude Virtual Avatar" draggable="false">
+          <div class="pedestal" aria-hidden="true"></div>
+
+          <!-- Exhausted Grayscale Veil -->
+          <div class="exhausted-veil" aria-hidden="true">
+            <div class="exhausted-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span>额度耗尽 · 暂不可用</span>
+            </div>
+            <span id="veil-timer-claude" class="veil-timer">等待重置</span>
+          </div>
+        </div>
+
+        <div class="hp-panel">
+          <!-- 5H HP Bar + Mini Clock -->
+          <div class="hp-row" data-bar="claude-five">
+            <div class="hp-meta">
+              <span class="hp-label">5小时限额</span>
+              <span class="hp-pct" id="pct-claude-five">--%</span>
+            </div>
+            <div class="hp-bar-wrap">
+              <div class="hp-track" data-tier="high">
+                <div class="hp-trail" id="trail-claude-five"></div>
+                <div class="hp-fill" id="fill-claude-five">
+                  <span class="hp-sheen"></span>
+                </div>
+                <div class="hp-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="mini-clock" id="clock-claude-five" title="重置时间">
+                <svg class="clock-svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle class="clock-ring-bg" cx="12" cy="12" r="9.5"/>
+                  <circle class="clock-ring-prog" cx="12" cy="12" r="9.5"/>
+                  <line class="clock-hand-hr" x1="12" y1="12" x2="12" y2="7.5"/>
+                  <line class="clock-hand-min" x1="12" y1="12" x2="12" y2="5.5"/>
+                  <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+                </svg>
+                <span class="clock-text" id="time-claude-five">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly HP Bar + Mini Clock -->
+          <div class="hp-row" data-bar="claude-weekly">
+            <div class="hp-meta">
+              <span class="hp-label">
+                周限额
+                <span id="src-claude-weekly" class="src-tag" title="周限额数据来源">API 实时</span>
+              </span>
+              <span class="hp-pct" id="pct-claude-weekly">--%</span>
+            </div>
+            <div class="hp-bar-wrap">
+              <div class="hp-track" data-tier="high">
+                <div class="hp-trail" id="trail-claude-weekly"></div>
+                <div class="hp-fill" id="fill-claude-weekly">
+                  <span class="hp-sheen"></span>
+                </div>
+                <div class="hp-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="mini-clock" id="clock-claude-weekly" title="周重置时间">
+                <svg class="clock-svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle class="clock-ring-bg" cx="12" cy="12" r="9.5"/>
+                  <circle class="clock-ring-prog" cx="12" cy="12" r="9.5"/>
+                  <line class="clock-hand-hr" x1="12" y1="12" x2="12" y2="7.5"/>
+                  <line class="clock-hand-min" x1="12" y1="12" x2="12" y2="5.5"/>
+                  <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+                </svg>
+                <span class="clock-text" id="time-claude-weekly">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="details-toggle" data-target="models-claude" aria-expanded="false">
+          <span>模型明细</span>
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="models-claude" class="models-drawer hidden"></div>
+      </article>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
