@@ -2,6 +2,9 @@
 
 Antigravity 虚拟形象与额度监控插件（Auxiliary Side Pane UI Plugin）。
 
+<img width="1070" height="738" alt="image" src="https://github.com/user-attachments/assets/9b75625f-77cf-4cd3-a445-1f2cd7f4b370" />
+
+
 ## 功能特性
 
 - **双虚拟形象展示**：在 Antigravity 右侧面板（Aux Pane）展示 `Claude.png` 与 `Gemini.png` 透明背景立绘。
@@ -14,7 +17,7 @@ Antigravity 虚拟形象与额度监控插件（Auxiliary Side Pane UI Plugin）
   - **Gemini 系列**：Gemini 形象激活星穹紫青光环与悬浮呼吸特效。
   - **Orchestrator 模式**：顶部切换为流光协同徽章；若当前任务同时调用了 Gemini 与 Claude 系列模型，双方形象同时高亮并激活「双系协同」光束连接。
 - **耗尽变灰遮罩**：当某系列模型额度归零不可用时，对应形象自动切换为灰度去色 + 磨砂锁止遮罩，并显示重置倒计时。
-- **周限额校准与效果预览**：支持手动校准周限额初始值（Antigravity 本地接口未直接暴露独立周池时自动通过 5H 消耗推算），并内置「模拟预览」面板方便随时预览各类状态。
+- **效果预览**：内置「模拟预览」面板方便随时预览各类状态。
 
 ## 安装与更新（Windows）
 
